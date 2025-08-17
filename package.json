@@ -1,0 +1,30 @@
+{
+  "name": "webpac-status-monitor",
+  "version": "1.0.0",
+  "description": "A Node.js bot to monitor website status and record response data to daily files",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-alert": "node index.js --test-alert",
+    "setup-cron": "chmod +x setup-crontab.sh && ./setup-crontab.sh",
+    "test-monitor": "chmod +x run-monitor.sh && ./run-monitor.sh"
+  },
+  "keywords": [
+    "monitoring",
+    "website",
+    "status",
+    "bot"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "fs-extra": "^11.2.0",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
