@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs-extra');
 const path = require('path');
+const moment = require('moment-timezone');
 
 // Load environment variables from .env file if it exists
 const dotenv = require('dotenv');
@@ -12,6 +13,8 @@ class WebsiteMonitor {
         this.targetUrl = process.env.TARGET_URL || 'https://webpac.library.gov.mo/client/zh_TW/webpac/search/results?qu=%E9%AC%BC%E6%BB%85&te=ILS';
         // Read Discord webhook URL from environment variable, with default fallback
         this.webhookUrl = process.env.DISCORD_WEBHOOK_URL || 'https://discord.com/api/webhooks/channelid/ttttoken';
+        // Read timezone from environment variable, fallback to UTC
+        this.timezone = process.env.TIMEZONE || 'UTC';
         this.logsDir = path.join(__dirname, 'logs');
         this.ensureLogsDirExists();
     }
@@ -33,8 +36,16 @@ class WebsiteMonitor {
     }
 
     getCurrentTimeString() {
-        const now = new Date();
-        return now.toISOString();
+        // Use moment-timezone to format timestamp in the configured timezone
+        let now = moment();
+        let formatted;
+        try {
+            formatted = now.tz(this.timezone).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        } catch (e) {
+            // fallback to UTC if timezone is invalid
+            formatted = now.utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+        }
+        return formatted;
     }
 
     getLogFilePath() {

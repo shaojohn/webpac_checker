@@ -56,44 +56,47 @@ npm run test-alert
 
 ### Crontab Scheduling (Linux/Ubuntu - Recommended for Production)
 
-#### Quick Setup
-1. Make the script executable:
-```bash
-chmod +x run-monitor.sh
+
+## Usage
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Configure environment variables:**
+   - Create a `.env` file in the project root (optional, see below for variables).
+   - Example:
+     ```env
+     TARGET_URL=https://webpac.library.gov.mo/client/zh_TW/webpac/search/results?qu=%E9%AC%BC%E6%BB%85&te=ILS
+     DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/yourchannelid/yourtoken
+     TIMEZONE=Asia/Taipei
+     ```
+
+3. **Run the monitor:**
+   ```bash
+   npm start
+   ```
+
+   Or schedule with cron/Task Scheduler (see below).
+
+## Environment Variables
+
+- `TARGET_URL`: The website URL to monitor (default: Macau Library Webpac search for "鬼滅").
+- `DISCORD_WEBHOOK_URL`: Discord webhook for alerts (optional).
+- `TIMEZONE`: (Optional) The timezone for log timestamps, e.g., `Asia/Taipei`. If not set or invalid, UTC is used.
+
+You can add these to a `.env` file in the project root.
+
+## Log Files
+
+Log files are created daily in the `logs/` directory. Each entry records the timestamp (in the configured timezone or UTC), HTTP status code, and response time in milliseconds.
+
+Example log entry:
+
 ```
-
-2. Edit your crontab:
-```bash
-crontab -e
+2025-08-21T17:03:02.994+08:00 | Status: 200 | Response Time: 511ms
 ```
-
-3. Add one of these lines for different intervals:
-
-**Every 30 minutes:**
-```bash
-*/30 * * * * cd /path/to/webpac_checker && ./run-monitor.sh
-```
-
-**Every 15 minutes:**
-```bash
-*/15 * * * * cd /path/to/webpac_checker && ./run-monitor.sh
-```
-
-**Every hour at minute 0:**
-```bash
-0 * * * * cd /path/to/webpac_checker && ./run-monitor.sh
-```
-
-**Every 5 minutes (for testing):**
-```bash
-*/5 * * * * cd /path/to/webpac_checker && ./run-monitor.sh
-```
-
-#### Managing Cron Jobs
-```bash
-# View current cron jobs
-crontab -l
-
 # Edit cron jobs
 crontab -e
 
