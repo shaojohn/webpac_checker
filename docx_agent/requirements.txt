@@ -1,0 +1,19 @@
+# Core DOCX processing
+python-docx>=1.1.0
+
+# LangChain ecosystem
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-openai>=0.1.0
+
+# Spell checking
+pyspellchecker>=0.8.1
+
+# Grammar checking (optional – requires Java 8+)
+language-tool-python>=2.7.1
+
+# Utilities
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+colorama>=0.4.6
+jinja2>=3.1.0
