@@ -219,7 +219,7 @@ class ProofreadingAgent:
             return self.run(docx_path)
 
         try:
-            from langchain.agents import create_agent
+            from langchain.agents import create_agent  # LangChain ≥ 1.x
             from langchain_openai import ChatOpenAI
         except ImportError as exc:
             _logger.warning(
@@ -250,25 +250,34 @@ class ProofreadingAgent:
             "5. Provide a concise summary of all findings."
         )
 
-        agent = create_agent(
-            model=llm,
-            tools=tools,
-            system_prompt=system_prompt,
-        )
+        try:
+            # LangChain 1.x: create_agent returns a compiled graph agent
+            agent = create_agent(
+                model=llm,
+                tools=tools,
+                system_prompt=system_prompt,
+            )
 
-        _logger.info("Running LLM-driven proofreading: %s", path_str)
+            _logger.info("Running LLM-driven proofreading: %s", path_str)
 
-        user_message = f"Please proofread the DOCX file at: {path_str}"
-        response = agent.invoke({"messages": [("human", user_message)]})
+            user_message = f"Please proofread the DOCX file at: {path_str}"
+            response = agent.invoke({"messages": [("human", user_message)]})
 
-        # Extract the final text response
-        messages = response.get("messages", [])
-        llm_summary = ""
-        for msg in reversed(messages):
-            content = getattr(msg, "content", "")
-            if content and isinstance(content, str):
-                llm_summary = content
-                break
+            # Extract the final text response from the message list
+            messages = response.get("messages", [])
+            llm_summary = ""
+            for msg in reversed(messages):
+                content = getattr(msg, "content", "")
+                if content and isinstance(content, str):
+                    llm_summary = content
+                    break
+
+        except Exception as exc:  # noqa: BLE001
+            _logger.warning(
+                "LLM agent execution failed (%s) – falling back to deterministic mode.",
+                exc,
+            )
+            return self.run(docx_path)
 
         # Also run deterministic checks to collect full issue lists
         det_result = self.run(path_str)

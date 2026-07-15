@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from statistics import StatisticsError
+from statistics import mode as stat_mode
 from typing import Any
 
 from docx_agent.config import HEADING_FONT_SIZES
@@ -213,13 +215,11 @@ class FormatCheckerSkill(BaseSkill):
             return issues
 
         # Find the most common indentation
-        from statistics import mode as stat_mode
-
         try:
             dominant_indent = stat_mode(
                 [round(v, 0) for v in indent_values]
             )
-        except Exception:  # noqa: BLE001
+        except (StatisticsError, Exception):  # noqa: BLE001
             return issues
 
         for para in paragraphs:
